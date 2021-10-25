@@ -20,6 +20,7 @@ mv frontend/dist/index.html templates
 echo "Compiling for Linux..."
 GIN_MODE=release
 env GOOS=linux GOARCH=amd64 go build
+mv dosiero releases/
 #echo "Compiling for macOS Intel..."
 #env GOOS=darwin GOARCH=amd64 go build -mod=vendor -trimpath -o bin/documize-community-darwin-amd64 ./edition/community.go
 #echo "Compiling for macOS ARM..."

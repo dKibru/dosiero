@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"time"
 
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -59,13 +60,6 @@ func EmbedFolder(fsEmbed embed.FS, targetPath string, index bool) static.ServeFi
 	}
 }
 
-// album represents data about a record album.
-type album struct {
-	ID     string  `json:"id"`
-	Title  string  `json:"title"`
-	Artist string  `json:"artist"`
-	Price  float64 `json:"price"`
-}
 type upcatError struct {
 	Code    int
 	Message string
@@ -82,33 +76,6 @@ type FileInfo struct {
 	Mode    os.FileMode
 	ModTime string
 	IsDir   bool
-}
-
-// albums slice to seed record album data.
-var albums = []album{
-	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
-	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99},
-	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
-}
-
-// getAlbums responds with the list of all albums as JSON.
-func getAlbums(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, albums)
-}
-
-// postAlbums adds an album from JSON received in the request body.
-func postAlbums(c *gin.Context) {
-	var newAlbum album
-
-	// Call BindJSON to bind the received JSON to
-	// newAlbum.
-	if err := c.BindJSON(&newAlbum); err != nil {
-		return
-	}
-
-	// Add the new album to the slice.
-	albums = append(albums, newAlbum)
-	c.IndentedJSON(http.StatusCreated, newAlbum)
 }
 
 func indexPage(c *gin.Context) {
@@ -200,23 +167,6 @@ func getMetaData(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
 }
 
-// getAlbumByID locates the album whose ID value matches the id
-// parameter sent by the client, then returns that album as a response.
-func getAlbumByID(c *gin.Context) {
-	id := c.Param("id")
-	// db.Create(&Product{Code: "D42", Price: 100})
-
-	// Loop over the list of albums, looking for
-	// an album whose ID value matches the parameter.
-	for _, a := range albums {
-		if a.ID == id {
-			c.IndentedJSON(http.StatusOK, a)
-			return
-		}
-	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
-}
-
 type Product struct {
 	gorm.Model
 	Code  string
@@ -247,9 +197,18 @@ func main() {
 	// db.AutoMigrate(&Product{})
 
 	router := gin.Default()
+	// gin.SetMode(gin.ReleaseMode)
 
 	// router.LoadHTMLGlob("templates/*.html")
-	router.Static("/assets", "./assets")
+	// router.Static("/assets", "./assets")
+
+	tbox, _ := rice.FindBox("assets")
+	// tbox, _ := rice.MustFindBox("assets")
+	router.StaticFS("/assets", tbox.HTTPBox())
+	// router.StaticFS("/assets", jsassets)
+	// fmt.Println(http.Dir("./assets"))
+	// router.StaticFS("/assets", http.FS(jsassets))
+
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"PUT", "PATCH"},
@@ -262,9 +221,6 @@ func main() {
 		MaxAge: 12 * time.Hour,
 	}))
 
-	router.GET("/albums", getAlbums)
-	router.POST("/albums", postAlbums)
-	router.GET("/albums/:id", getAlbumByID)
 	router.GET("/api/v1/meta", getMetaData)
 	router.GET("/api/v1/download", getFileDownload)
 
@@ -273,10 +229,13 @@ func main() {
 	fs := EmbedFolder(server, "templates", true)
 	router.Use(static.Serve("/", fs))
 
-	// fss := EmbedFolder(jsassets, "assets", true)
+	// fss := EmbedFolder(jsassets, "assets", false)
 	// router.Use(static.Serve("/assets", fss))
-	// tbox, _ := rice.FindBox("templates")
+	//
 	// abox, _ := rice.FindBox("assets")
+	// router.Use(static.Serve("/assets", abox. ))
+
+	// fmt.Println(abox.Name())
 
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{
@@ -285,7 +244,7 @@ func main() {
 	})
 	the_ip := GetOutboundIP()
 	fmt.Println("Hosted at :" + the_ip.String())
-	router.Run(the_ip.String() + ":8080")
-	// router.Run("172.20.53.18:8080")
+	// router.Run(the_ip.String() + ":8080")
+	router.Run("0.0.0.0:8080")
 
 }

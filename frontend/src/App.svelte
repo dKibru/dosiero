@@ -37,10 +37,10 @@ axios.get(import.meta.env.VITE_UPCAT_URL +'api/v1/meta')
         <Filelist directory_items={directory_items} base_dir={base_dir} />
         <!-- <Counter id="0" /> -->
       </div>
-      <div class="flex justify-center">
+      <!-- <div class="flex justify-center">
         <button class="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">Button</button>
         <button class="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg">Button</button>
-      </div>
+      </div> -->
     </div>
   </div>
 </section>

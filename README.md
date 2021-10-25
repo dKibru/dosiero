@@ -7,7 +7,7 @@ Dosiero is an Http file server written in golang.
 Download the latest  [binary file](https://github.com/dKibru/dosiero/raw/main/releases/dosiero) and run.
 
 ```bash
-./ dosiero
+./dosiero
 ```
 
 Then open your browser at : `localhost:9090`. 

@@ -7,7 +7,7 @@ console.log("directory_items", directory_items)
 function handleClickDir(event) {
   console.log(event.srcElement.id);
   var item = event.srcElement.id
-  axios.get(import.meta.env.VITE_UPCAT_URL +'api/v1/meta?d='+base_dir+"&c="+item)
+  axios.get(import.meta.env.VITE_UPCAT_URL ? `${import.meta.env.VITE_UPCAT_URL}/api/v1/meta?d=${base_dir}"&c="${item}`: '/api/v1/meta?d='+base_dir+"&c="+item)
     .then(function (response) {
       base_dir = response.data.base_directory
       directory_items = response.data.directory_items
@@ -24,7 +24,7 @@ function handleClickFile(event) {
   var item = event.srcElement.id
 
     axios({
-        url: import.meta.env.VITE_UPCAT_URL +'api/v1/download?d='+base_dir+"&c="+item, 
+        url: import.meta.env.VITE_UPCAT_URL  ? `${import.meta.env.VITE_UPCAT_URL}/api/v1/download?d=${base_dir}"&c="${item}`: '/api/v1/download?d='+base_dir+"&c="+item, 
         method: 'GET',
         responseType: 'blob', 
     })

@@ -2,6 +2,7 @@
 /frontend/dist/
 /frontend/.vscode/
 /frontend/.DS_Store
-/frontend/.env
+/frontend/.env.development
 /assets/
 /tmp/
+.DS_Store
